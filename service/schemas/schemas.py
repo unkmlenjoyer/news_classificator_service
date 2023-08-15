@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict
 
 from pydantic import BaseModel
 
@@ -8,4 +8,4 @@ class NewsHeadline(BaseModel):
 
 
 class NewsScores(BaseModel):
-    scores: List[float]
+    scores: Dict[str, float]
