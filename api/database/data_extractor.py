@@ -1,6 +1,7 @@
-from typing import Dict, Union
+from typing import Dict, List, Union
 
-from pymongo import MongoClient
+from jedi.api import project
+from pymongo import MongoClient, cursor
 
 
 class NewsClassifierDB:
@@ -45,3 +46,49 @@ class NewsClassifierDB:
             Data to insert into DB
         """
         self.client["news_data"]["classifier"].insert_one(prediction_data)
+
+    def select_news_short(self, news_ids: List[str]) -> cursor.Cursor:
+        """Method to select only short representation of news
+
+        Parameters
+        ----------
+        news_ids : List[str]
+            ID's to select from database
+
+        Returns
+        -------
+        pymongo.cursor.Cursor
+            Iterator with result
+        """
+        return self.client["news_data"]["classifier"].find(
+            filter={"text_id": {"$in": news_ids}},
+            projection={"text_id": 1, "_id": 0, "insert_time": 1},
+        )
+
+    def get_one_news(self, news_id: str) -> Dict[str, Union[str, Dict[str, float]]]:
+        """_summary_
+
+        Parameters
+        ----------
+        news_id : str
+            New's ID for text in database
+
+        Returns
+        -------
+        Dict[str, Union[str, Dict[str, float]]]
+            Data for only one news
+        """
+        return self.client["news_data"]["classifier"].find_one(
+            {"text_id": news_id}, projection={"_id": 0}
+        )
+
+    def delete_one_news(self, news_id: str):
+        """Delete only one news
+
+        Parameters
+        ----------
+        news_id : str
+            New's ID for text in database
+        """
+
+        self.client["news_data"]["classifier"].delete_one({"text_id": news_id})
