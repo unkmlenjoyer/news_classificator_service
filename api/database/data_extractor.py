@@ -1,7 +1,9 @@
+"""Mongo's connector with defined methods to get / set / delete data (news)"""
+
 from typing import Dict, List, Union
 
-from jedi.api import project
 from pymongo import MongoClient, cursor
+from pymongo.results import DeleteResult, InsertOneResult
 
 
 class NewsClassifierDB:
@@ -9,7 +11,6 @@ class NewsClassifierDB:
 
     Attributes
     ----------
-
     host : str
         Mongo's host
 
@@ -37,15 +38,19 @@ class NewsClassifierDB:
 
     def insert_prediction(
         self, prediction_data: Dict[str, Union[str, Dict[str, float]]]
-    ):
+    ) -> InsertOneResult:
         """Method to insert results of news classifier
 
         Parameters
         ----------
         prediction_data : Dict[str, Union[str, Dict[str, float]]]
             Data to insert into DB
+
+        Returns
+        -------
+        InsertOneResult
         """
-        self.client["news_data"]["classifier"].insert_one(prediction_data)
+        return self.client["news_data"]["classifier"].insert_one(prediction_data)
 
     def select_news_short(self, news_ids: List[str]) -> cursor.Cursor:
         """Method to select only short representation of news
@@ -66,7 +71,7 @@ class NewsClassifierDB:
         )
 
     def get_one_news(self, news_id: str) -> Dict[str, Union[str, Dict[str, float]]]:
-        """_summary_
+        """Get only one news item with specific identificator
 
         Parameters
         ----------
@@ -82,13 +87,17 @@ class NewsClassifierDB:
             {"text_id": news_id}, projection={"_id": 0}
         )
 
-    def delete_one_news(self, news_id: str):
+    def delete_one_news(self, news_id: str) -> DeleteResult:
         """Delete only one news
 
         Parameters
         ----------
         news_id : str
             New's ID for text in database
+
+        Returns
+        -------
+        DeleteResult
         """
 
-        self.client["news_data"]["classifier"].delete_one({"text_id": news_id})
+        return self.client["news_data"]["classifier"].delete_one({"text_id": news_id})

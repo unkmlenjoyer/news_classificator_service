@@ -1,10 +1,21 @@
+"""Custom validaton schemas"""
+
 from typing import Dict
 
-from pydantic import BaseModel
+from pydantic import BaseModel, constr
+
+
+class ErrorResponse(BaseModel):
+    """Customized Error Response"""
+
+    status_code: int
+    detail: str
 
 
 class NewsInputData(BaseModel):
-    data: str
+    """Customized News input"""
+
+    data: constr(min_length=30)
 
     class Config:
         json_schema_extra = {
@@ -15,6 +26,8 @@ class NewsInputData(BaseModel):
 
 
 class NewsScores(BaseModel):
+    """Customized validation model for new's scores"""
+
     scores: Dict[str, float]
 
     class Config:
@@ -37,6 +50,8 @@ class NewsScores(BaseModel):
 
 
 class NewsOutputData(BaseModel):
+    """Customized validation model as new's output"""
+
     text_id: str
     insert_time: str
     text: str
@@ -44,5 +59,7 @@ class NewsOutputData(BaseModel):
 
 
 class NewsShortsData(BaseModel):
+    """Customized validation model as new's short data"""
+
     text_id: str
     insert_time: str
