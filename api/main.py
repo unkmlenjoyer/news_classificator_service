@@ -50,13 +50,27 @@ idx2category = ArtifactLoader.load("storage/idx2category.pkl")
 
 app = FastAPI()
 
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Exception handler for validation
 @app.exception_handler(RequestValidationError)
 def handle_input(request: Request, exc: ErrorResponse):
     return JSONResponse(
         content={"message": "Lenght of text must be more than 30 chars"},
-        status_code=exc.status_code,
+        status_code=422,
     )
 
 
@@ -83,14 +97,14 @@ def root():
     return {"message": "service is alive"}
 
 
-@app.post("/predict", response_model=NewsScores)
+@app.post("/api/predict", response_model=NewsScores)
 def predict_category(headline: NewsInputData) -> NewsScores:
     # prepare text
     preprocessed = formatter.process_text(headline.data)
 
     if formatter.is_empty(preprocessed):
         raise EmptyModelInputException(
-            400, "Pruned (cleaned) data is empty. Can't use it to model's input"
+            422, "Pruned (cleaned) data is empty. Can't use it to model's input"
         )
 
     # get scores and map them by category
@@ -119,7 +133,7 @@ def predict_category(headline: NewsInputData) -> NewsScores:
     return {"scores": mapped_score}
 
 
-@app.get("/get_news_data", response_model=NewsOutputData)
+@app.get("/api/get_news_data", response_model=NewsOutputData)
 def retrieve_news(news_id: str) -> NewsOutputData:
     result = db.get_one_news(news_id)
     if result is None:
@@ -127,13 +141,13 @@ def retrieve_news(news_id: str) -> NewsOutputData:
     return result
 
 
-@app.post("/get_news_batch", response_model=List[NewsShortsData])
+@app.post("/api/get_news_batch", response_model=List[NewsShortsData])
 def retrieve_news(news_id: List[str]) -> List[NewsShortsData]:
     return list(db.select_news_short(news_id))
 
 
 # TODO create logging
-@app.delete("/delete_news")
+@app.delete("/api/delete_news")
 def delete_news(news_id: str):
     result = db.delete_one_news(news_id)
     if not result.deleted_count:
