@@ -3,8 +3,8 @@ import re
 from typing import List
 
 from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import WordPunctTokenizer
+from pymorphy2 import MorphAnalyzer
 
 
 class TextPreprocess:
@@ -14,6 +14,7 @@ class TextPreprocess:
 
     Attributes
     ----------
+
     tokenizer : WordPunctTokenizer
         Text tokenizer (splitter)
 
@@ -31,9 +32,9 @@ class TextPreprocess:
     def __init__(self):
         """Initialize text's preprocessor"""
         self.tokenizer: WordPunctTokenizer = WordPunctTokenizer()
-        self.lemmatizer: WordNetLemmatizer = WordNetLemmatizer()
-        self.reg_exp: re.Pattern = re.compile("[^A-Za-z]")
-        self.stop_words: List[str] = stopwords.words("english")
+        self.morph_analyzer: MorphAnalyzer = MorphAnalyzer()
+        self.reg_exp: re.Pattern = re.compile("[^А-Яа-яЁё]")
+        self.stop_words: List[str] = stopwords.words("russian")
 
     @staticmethod
     def is_empty(text: str) -> bool:
@@ -143,7 +144,7 @@ class TextPreprocess:
         List[str]
             Normalized tokens
         """
-        return [self.lemmatizer.lemmatize(word) for word in text]
+        return [self.morph_analyzer.normal_forms(word)[0] for word in text]
 
     def filter_words(self, text: List[str]) -> List[str]:
         """Method to filter text from stop words
