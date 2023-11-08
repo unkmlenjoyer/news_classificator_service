@@ -9,7 +9,6 @@ from typing import List
 import numpy as np
 import uvicorn
 from database.data_extractor import NewsClassifierDB
-from dotenv import load_dotenv
 from exception.exceptions import (
     EmptyModelInputException,
     NewsNotFound,
@@ -28,12 +27,9 @@ from schemas.schemas import (
 from src.classifier import ArtifactLoader
 from src.text_utils import TextPreprocess
 
-# load environment variables from .env file
-load_dotenv()
-
 # env for DB (mongo)
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
+DB_HOST = os.getenv("DB_CONTAINER_NAME")
+DB_PORT = int(os.getenv("DB_PORT"))
 
 # env for FastAPI
 APP_HOST = os.getenv("APP_HOST")
@@ -78,6 +74,7 @@ def handle_not_inserted(request: Request, exc: ErrorResponse):
 
 
 @app.get("/")
+@app.get("/check_health")
 def root():
     return {"message": "service is alive"}
 

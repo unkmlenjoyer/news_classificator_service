@@ -1,0 +1,15 @@
+services:
+  api:
+    build:
+      ./api
+    depends_on:
+        - news_db
+    env_file:
+      - ./api/.env
+    ports:
+      - '5050:5050'
+
+  news_db:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
