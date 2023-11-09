@@ -34,7 +34,7 @@ class NewsClassifierDB:
 
         self.host = host
         self.port = port
-        self.client = MongoClient(f"mongodb://{self.host}:{self.port}/")
+        self.client = MongoClient(self.host, self.port)
 
     def insert_prediction(
         self, prediction_data: Dict[str, Union[str, Dict[str, float]]]
