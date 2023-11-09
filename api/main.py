@@ -1,5 +1,4 @@
-"""News classifier API. You can predict category on news"""
-
+"""News classifier API. You can predict category of news"""
 
 # import libraries
 import datetime
@@ -10,7 +9,6 @@ from typing import List
 import numpy as np
 import uvicorn
 from database.data_extractor import NewsClassifierDB
-from dotenv import load_dotenv
 from exception.exceptions import (
     EmptyModelInputException,
     NewsNotFound,
@@ -29,12 +27,9 @@ from schemas.schemas import (
 from src.classifier import ArtifactLoader
 from src.text_utils import TextPreprocess
 
-# load environment variables from .env file
-load_dotenv()
-
 # env for DB (mongo)
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
+DB_HOST = os.getenv("DB_CONTAINER_NAME")
+DB_PORT = int(os.getenv("DB_PORT"))
 
 # env for FastAPI
 APP_HOST = os.getenv("APP_HOST")
@@ -45,16 +40,14 @@ db = NewsClassifierDB(DB_HOST, DB_PORT)
 
 # Preprocessor, classifier, category mapper
 formatter = TextPreprocess()
-model = ArtifactLoader.load("storage/tfidf_logreg.pkl")
-idx2category = ArtifactLoader.load("storage/idx2category.pkl")
+classifier = ArtifactLoader.load("storage/tf_idf_base.pkl")
+idx2topic = ArtifactLoader.load("storage/idx2topic.pkl")
 
 app = FastAPI()
 
 from fastapi.middleware.cors import CORSMiddleware
 
-origins = [
-    "http://localhost:3000",
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -93,6 +86,7 @@ def handle_not_inserted(request: Request, exc: ErrorResponse):
 
 
 @app.get("/")
+@app.get("/check_health")
 def root():
     return {"message": "service is alive"}
 
@@ -108,11 +102,11 @@ def predict_category(headline: NewsInputData) -> NewsScores:
         )
 
     # get scores and map them by category
-    probas = model.predict_proba(np.array([preprocessed])).ravel()
-    mapped_score = {idx2category[i]: score for i, score in enumerate(probas)}
+    probas = classifier.predict_proba(np.array([preprocessed])).ravel()
+    mapped_score = {idx2topic[i]: score for i, score in enumerate(probas)}
 
     # generate unique id for given text
-    insert_datetime = str(datetime.datetime.now())
+    insert_datetime = datetime.datetime.now().strftime("%Y-%m-%d %T")
     text_id = hashlib.sha1(insert_datetime.encode("UTF-8")).hexdigest()[:16]
 
     # TODO logging inserting
@@ -134,15 +128,23 @@ def predict_category(headline: NewsInputData) -> NewsScores:
 
 
 @app.get("/api/get_news_data", response_model=NewsOutputData)
-def retrieve_news(news_id: str) -> NewsOutputData:
+def retrieve_one_news(news_id: str) -> NewsOutputData:
     result = db.get_one_news(news_id)
     if result is None:
         raise NewsNotFound(400, f"News with ID = {news_id} not found")
     return result
 
 
+@app.get("/api/get_news_all", response_model=List[NewsOutputData])
+def retrieve_all_news() -> List[NewsOutputData]:
+    result = db.select_news_full()
+    if result is None:
+        raise NewsNotFound(400, f"There aren't any news")
+    return list(result)
+
+
 @app.post("/api/get_news_batch", response_model=List[NewsShortsData])
-def retrieve_news(news_id: List[str]) -> List[NewsShortsData]:
+def retrieve_batch_news(news_id: List[str]) -> List[NewsShortsData]:
     return list(db.select_news_short(news_id))
 
 
