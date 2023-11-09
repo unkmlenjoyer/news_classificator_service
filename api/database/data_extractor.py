@@ -70,6 +70,30 @@ class NewsClassifierDB:
             projection={"text_id": 1, "_id": 0, "insert_time": 1},
         )
 
+    # TODO add pagination
+    def select_news_full(self) -> cursor.Cursor:
+        """Method to select all news
+
+        Parameters
+        ----------
+        news_ids : List[str]
+            ID's to select from database
+
+        Returns
+        -------
+        pymongo.cursor.Cursor
+            Iterator with result
+        """
+        return self.client["news_data"]["classifier"].find(
+            projection={
+                "_id": 0,
+                "text_id": 1,
+                "insert_time": 1,
+                "text": 1,
+                "prediction": 1,
+            }
+        )
+
     def get_one_news(self, news_id: str) -> Dict[str, Union[str, Dict[str, float]]]:
         """Get only one news item with specific identificator
 
