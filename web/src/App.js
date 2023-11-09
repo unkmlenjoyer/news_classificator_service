@@ -20,8 +20,6 @@ function App() {
         setError("")
         return response
       } else {
-        // If the API responds meaningful error message,
-        // then you can get it by calling response.statusText
         throw new Error("Sorry something went wrong")
       }
     })
@@ -30,28 +28,26 @@ function App() {
         setScore(text['data']['scores'])
       })
       .catch(error => {
-        // It is always recommended to define the error messages
-        // in the client side rather than simply relying on the server messages,
-        // since server messages might not make sense to end user most of the time.
         setError(error.message)
       });
   }
   return (
     <div className="App list-group-item  justify-content-center align-items-center mx-auto" style={{ "width": "400px", "backgroundColor": "white", "marginTop": "15px" }} >
-      <h6 className="card text-white bg-primary mb-3">News classifier and Document similar finder</h6>
+      <h6 className="card text-white bg-primary mb-3">Классификатор новостей</h6>
       <div className="card-body">
       {error}
         <span className="card-text">
           <input className="mb-2 form-control titleIn" onChange={event => setTitle(event.target.value)} placeholder='News headline' />
-          <button className="btn btn-outline-primary mx-2 mb-3" style={{ 'borderRadius': '50px', "font-weight": "bold" }} onClick={handleClick}>Predict category</button>
+          <button className="btn btn-outline-primary mx-2 mb-3" style={{ 'borderRadius': '50px', "font-weight": "bold" }} onClick={handleClick}>Предсказать категорию</button>
         </span>
       </div>
       <div>
         <table>
-          <thead></thead>
-          <tbody>
+          <thead>
             <td>Category</td>
             <td>Probas</td>
+          </thead>
+          <tbody>
             {
               Object.keys(score).map(key => {
                 return (
@@ -64,7 +60,27 @@ function App() {
             }
         </tbody>
         </table>
-        </div>
+      </div>
+      <div>
+      <table>
+          <thead>
+            <td>Category</td>
+            <td>Probas</td>
+          </thead>
+          <tbody>
+            {
+              Object.keys(score).map(key => {
+                return (
+                    <tr>
+                      <td>{key}</td>
+                      <td>{(score[key] * 100).toFixed(3)}</td>
+                    </tr>
+                );
+              })
+            }
+        </tbody>
+        </table>
+      </div>
     </div>
   );
 }
