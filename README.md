@@ -51,7 +51,7 @@
    Доступ к API: `localhost:5050`
 
 
-### 5. Пример использования
+### 4. Пример использования
 -----
 
 На главном экране достаточно ввести необходимый текст и нажать кнопку "Предсказать категорию".
@@ -113,15 +113,8 @@ Be sure that Docker is installed on your local machine. If not, go [there](https
 
    API: `localhost:5050`
 
-### 4. Running
------
 
-Just go to command line and type next command:
-
-<code>docker run --rm -d --env-file .env -p 8001:8001 ranking_service</code>
-
-
-### 5. Examples of usage
+### 4. Examples of usage
 -----
 
 On the main page you can paste text of news headline and press "Предсказать категорию" button.
