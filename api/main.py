@@ -6,6 +6,7 @@ import hashlib
 import os
 from typing import List
 
+import catboost
 import numpy as np
 import uvicorn
 from database.data_extractor import NewsClassifierDB
@@ -40,7 +41,8 @@ db = NewsClassifierDB(DB_HOST, DB_PORT)
 
 # Preprocessor, classifier, category mapper
 formatter = TextPreprocess()
-classifier = ArtifactLoader.load("storage/tf_idf_base.pkl")
+vectorizer = ArtifactLoader.load("storage/tfidf_vect_10k.pkl")
+classifier = catboost.CatBoostClassifier().load_model("storage/ctb_clf_v1")
 idx2topic = ArtifactLoader.load("storage/idx2topic.pkl")
 
 app = FastAPI()
@@ -93,6 +95,11 @@ def root():
 
 @app.post("/api/predict", response_model=NewsScores)
 def predict_category(headline: NewsInputData) -> NewsScores:
+    if formatter.is_empty(headline.data):
+        raise EmptyModelInputException(
+            422, "Origin data is empty. Can't use it to model's input"
+        )
+
     # prepare text
     preprocessed = formatter.process_text(headline.data)
 
@@ -101,8 +108,11 @@ def predict_category(headline: NewsInputData) -> NewsScores:
             422, "Pruned (cleaned) data is empty. Can't use it to model's input"
         )
 
+    # tf-idf pretrained transformation
+    vectorized = vectorizer.transform([preprocessed])
+
     # get scores and map them by category
-    probas = classifier.predict_proba(np.array([preprocessed])).ravel()
+    probas = classifier.predict(vectorized, prediction_type="Probability").ravel()
     mapped_score = {idx2topic[i]: score for i, score in enumerate(probas)}
 
     # generate unique id for given text
