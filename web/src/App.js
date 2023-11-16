@@ -62,7 +62,7 @@ function App() {
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
               <div class="navbar-nav">
-                <a class="nav-item nav-link" href="https://github.com/unkmlenjoyer/news_classificator_service">Репозиторий проекта</a>
+                <a class="nav-item nav-link" href="https://github.com/unkmlenjoyer/news_classifier_service">Репозиторий проекта</a>
               </div>
             </div>
           </nav>
@@ -113,7 +113,7 @@ function App() {
                       <tr>
                         <td>{item.text_id}</td>
                         <td>{ item.insert_time}</td>
-                        <td>{ item.text }</td>
+                        <td>{ item.text.slice(0, 50) + '...' }</td>
                         <td>{ Object.entries(item.prediction).reduce((a, b) => a[1] > b[1] ? a : b)[0] }</td>
                       </tr>
                     );
