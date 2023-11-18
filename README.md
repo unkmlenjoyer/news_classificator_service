@@ -14,13 +14,13 @@
 ### 2. Структура проекта
 -----
 
-- `api`: содержит back-часть системы, включая сам классификатор, завернутый в FastAPI, коннектор к MongoDB
+- `api`: содержит back-часть системы, включая сам классификатор (TF-IDF + CatBoost), завернутый в FastAPI, коннектор к MongoDB
 - `artifacts`: содержит модель и декодер категорий новостей
 - `notebooks` содержит скрипты исследования (.py формата):
   - `src`: готовые классы / утилиты для исследований
   - `data_preprocessing.py`: преобразование новостей в удобный формат для исследования
-  - `tf_idf_baseline.py`: пайплайн с помощью TF-IDF + LogReg (OneVsAll classifier)
-  - `fast_text_solution.py`: пайплайн с помощью FastText
+  - `tf_idf_logreg.py`: пайплайн с помощью TF-IDF + LogReg (OneVsAll classifier)
+  - `tf_idf_catboost.py`: пайплайн с помощью TF-IDF + CatBoost
 - `web`: содержит web-часть системы (простой интерфейс с отображением)
 
 
@@ -79,13 +79,13 @@ Target metric for training is F1-macro (~ 0.63)
 ### 2. Project structure
 -----
 
-- `api`: back part of service: api with classificator (Fast API), MongoDB connector.
+- `api`: back part of service: api with classificator (Fast API, TF-IDF + CatBoost), MongoDB connector.
 - `artifacts`: model and category decoder
 - `notebooks`: research scripts
   - `src`: research classes & utils
   - `data_preprocessing.py`: data transforming into special form for training
-  - `tf_idf_baseline.py`: training pipeline with TF-IDF & LogReg (OneVsAll classifier)
-  - `fast_text_solution.py`: training pipeline with FastText
+  - `tf_idf_logreg.py`: training pipeline with TF-IDF & LogReg (OneVsAll classifier)
+  - `tf_idf_catboost.py`: training pipeline with TF-IFD & CatBoost
 - `web`: simple React web-app
 
 
