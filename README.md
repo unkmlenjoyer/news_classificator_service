@@ -9,7 +9,7 @@
 
 В качестве новостных заголовков и категорий используется [датасет Lenta.ru](https://www.kaggle.com/datasets/yutkin/corpus-of-russian-news-articles-from-lenta)
 
-Целевая метрика при обучении F1-macro (~0.77)
+Целевая метрика при обучении F1-macro (~0.63)
 
 ### 2. Структура проекта
 -----
@@ -74,7 +74,7 @@ The aim of the project is to create a classification system for news headlines
 
 The following [Lenta.ru dataset](https://www.kaggle.com/datasets/yutkin/corpus-of-russian-news-articles-from-lenta) is used for training.
 
-Target metric for training is F1-macro (~ 0.77)
+Target metric for training is F1-macro (~ 0.63)
 
 ### 2. Project structure
 -----
