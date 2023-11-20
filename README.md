@@ -36,15 +36,18 @@
 3. Создайте `.env` файл с 4 переменными:
 
     `APP_HOST`=0.0.0.0
+   
     `APP_PORT`=5050
+   
     `DB_CONTAINER_NAME`=news_db
+   
     `DB_PORT`=27017
 
-4. Вернитесь на уровень выше и выполните следующую команду
+5. Вернитесь на уровень выше и выполните следующую команду
 
    <code>docker compose up --build</code>
 
-5. Теперь можно перейти в web-интерфейс системы:
+6. Теперь можно перейти в web-интерфейс системы:
 
    `localhost:3000`
 
@@ -99,15 +102,18 @@ Be sure that Docker is installed on your local machine. If not, go [there](https
 3. Create `.env` file with two variables (without symbols <>)
 
     `APP_HOST`=0.0.0.0
+   
     `APP_PORT`=5050
+   
     `DB_CONTAINER_NAME`=news_db
+   
     `DB_PORT`=27017
 
-4. Then get back to main directory and run:
+5. Then get back to main directory and run:
 
    <code>docker compose up --build</code>
 
-5. Now you can visit web-part of service:
+6. Now you can visit web-part of service:
 
    `localhost:3000`
 
